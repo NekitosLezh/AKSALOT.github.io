@@ -1,0 +1,555 @@
+ <!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Название документа</title>
+    <style>
+.topbutton {
+width:100px;
+border:2px solid #9ACD32;
+background:#9ACD32;
+text-align:center;
+padding:10px;
+position:fixed;
+bottom:50px;
+right:50px;
+cursor:pointer;
+color:#333;
+font-family:Franklin Gothic;
+font-size:12px;
+border-radius: 5px;
+-moz-border-radius: 5px;
+-webkit-border-radius: 5px;
+-khtml-border-radius: 5px;
+z-index: 1001;
+}
+html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img, dl, dt, dd, 
+ol, ul, li, form, table, caption, tr, th, td, article, aside, footer, header{               
+    margin: 0; padding: 0; border: 0 font-size: 100%;
+    vertical-align: baseline;
+}
+ #content {
+ background: #013220;  
+padding: 20px; 
+ align=" justify";
+   } 
+ h1 {
+      font-size: 30pt;
+   font-family:"Arial"
+    }
+h2 { 
+text-align: justify; 
+ margin: 50px  180px   20px  180px ;
+ font-size: 24px;
+ font-family:"Uk_Antique Regular";
+    }
+ body {
+      margin: 0;
+      text-align: center;
+      background: #e2f7df;
+    }
+    .slider {
+      /* устанавливаем относительное позиционирование элементу */
+      position: relative;
+      display: inline-block;
+    }
+   .slider__items {
+      /* устанавливаем относительное позиционирование элементу */
+      position: relative;
+      /* устанавливаем элементу ширину, равную 100% */
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .slider__item {
+      /* устанавливаем относительное позиционирование элементу */
+      position: relative;
+      /* отключаем по умолчанию отображение всех слайдов */
+      display: none;
+      /* устанавливаем элементу ширину, равную 100% */
+      width: 100%;
+      /* длительность анимации трансформации */
+      transition: transform 0.6s ease;
+      /* не показывать обратную сторону трансформируемого элемента */
+      backface-visibility: hidden;
+    }
+    .slider__item_active,
+    .slider__item_next,
+    .slider__item_prev {
+      /* отображаем слайд, если он имеет один из этих классов */
+      display: block;
+    }
+    .slider__item_next,
+    .slider__item_prev {
+      /* устанавливаем абсолютное позиционирование для элемента, на который будет сменяться слайд (на время трансформации) */
+      position: absolute;
+      /* устанавливаем положение элемента, т.е. координату top */
+      top: 0;
+    }
+    .slider__item_next.slider__item_left,
+    .slider__item_prev.slider__item_right {
+      /* сдвигаем элемент на 0 по горизонтали */
+      transform: translateX(0);
+    }
+    .slider__item_next,
+    .slider__item_right.slider__item_active {
+      /* сдвигаем элемент на 100% по горизонтали */
+      transform: translateX(100%);
+    }
+    .slider__item_prev,
+    .slider__item_left.slider__item_active {
+      /* сдвигаем элемент на -100% по горизонтали */
+      transform: translateX(-100%);
+    }
+    /* элементы управления (назад и вперёд) слайдером */
+    .slider__control {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 15%;
+      color: #fff;
+      text-align: center;
+      opacity: 0.5;
+    }
+    .slider__control:hover,
+    .slider__control:focus {
+      color: #fff;
+      text-decoration: none;
+      outline: 0;
+      opacity: .9;
+    }
+    .slider__control_prev {
+      left: 0;
+    }
+    .slider__control_next {
+      right: 0;
+    }
+    .slider__control::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      background: transparent no-repeat center center;
+      background-size: 100% 100%;
+    }
+    .slider__control_prev::before {
+      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 8 8'%3E%3Cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3E%3C/svg%3E");
+    }
+
+    .slider__control_next::before {
+      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E");
+    }
+    /* индикаторы слайдера */
+
+    .slider__indicators {
+      position: absolute;
+      right: 0;
+      bottom: 10px;
+      left: 0;
+      z-index: 15;
+      display: flex;
+      justify-content: center;
+      padding-left: 0;
+      margin-right: 15%;
+      margin-left: 15%;
+      list-style: none;
+    }
+
+    .slider__indicator {
+      position: relative;
+      flex: 0 1 auto;
+      width: 30px;
+      height: 3px;
+      margin-right: 3px;
+      margin-left: 3px;
+      text-indent: -999px;
+      cursor: pointer;
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 6px;
+    }
+
+    .slider__indicator::before {
+      position: absolute;
+      top: -10px;
+      left: 0;
+      display: inline-block;
+      width: 100%;
+      height: 10px;
+      content: "";
+    }
+
+    .slider__indicator::after {
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      display: inline-block;
+      width: 100%;
+      height: 10px;
+      content: "";
+    }
+
+    .slider__indicator_active {
+      background-color: #fff;
+    }
+
+    img {
+      display: inline-block;
+      height: auto;
+      max-width: 100%;
+	   
+    }
+	    .img {
+      display: inline-block;
+      height: auto;
+      max-width: 100%;
+	  margin: 20px  20px   20px  20px ;
+	}
+
+
+
+ a { 
+  font-family:"Franklin Gothic";
+    color:#000000;
+    }
+
+     #navbar ul{
+ 
+        display: none;
+        background-color: #9ACD32;
+        position: absolute;
+        top: 100%;
+      }
+      #navbar li:hover ul { display: block; }
+      #navbar, #navbar ul{
+        
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+      }
+      #navbar {
+        position: relative; z-index: 1000;
+  position: fixed;
+        height: 40px;
+        background-color: #9ACD32;
+        padding-left: 25px;
+        min-width: 1100px;
+      }
+      #navbar li {
+        float: left;
+        position: relative;
+        height: 100%;
+      }
+      #navbar li a {
+        display: block;
+        padding: 10px;
+        width: 200px;
+        color: #333;
+        text-decoration: none;
+        text-align: center;
+      }
+      #navbar ul li { float: none; }
+      #navbar li:hover { background-color: #DC143C; }
+      #navbar ul li:hover { background-color: #DC143C; }
+
+    </style>
+  </head>
+ 
+  <body>
+  
+     <body>
+  
+    <ul id="navbar" >
+      <li><big> <a href="Главная.html">Главная</a></li>
+      <li><a href="Города.html">Города</a> <ul>
+          <li><a href="Города.html#1">Несебр</a></li>
+          <li><a href="Города.html#2">Поморье</a></li>
+          <li><a href="Города.html#3">Бургас</a></li>
+           <li><a href="Города.html#4">Варна</a></li>
+            <li><a href="Города.html#5">Равда</a></li>
+             <li><a href="Города.html#6">Ахелой</a></li>
+
+        </ul></li>
+      <li><a href="достопремечательности.html">Достопремичательности</a>
+         <ul>
+          <li><a href="достопремечательности.html#7 ">Семь Рильских озёр</a></li>
+          <li><a href="достопремечательности.html#8">Крепость и скалы Белоградчика</a></li>
+          <li><a href="достопремечательности.html#9">Роженский монастырь</a></li>
+           <li><a href="достопремечательности.html#10">Фракийская гробница в Казанлыке</a></li>
+           <li><a href="достопремечательности.html#11">Ротонда Святого Георгия</a></li>
+            <li><a href="достопремечательности.html#12">Село Широка-Лыка</a></li>
+             <li><a href="достопремечательности.html#13">Долина Роз</a></li>
+              <li><a href="достопремечательности.html#14">Горный массив Витоша</a></li>
+            <li><a href="достопремечательности.html#15">Крепость Царевец </a></li>
+             <li><a href="достопремечательности.html#16">Крепость Баба Вида</a></li>
+
+        </ul>
+        <li><a href="Традиции.html">Традиции</a>
+      </li>
+       <li><a href="Рег.html">Регистрация</a>
+      </li>
+    </ul>
+    </body>
+ 
+      
+</div>
+ 
+   <div id="slider" class="slider">
+    <ol class="slider__indicators">
+      <li class="slider__indicator slider__indicator_active" data-slide-to="0"></li>
+      <li class="slider__indicator" data-slide-to="1"></li>
+      <li class="slider__indicator" data-slide-to="2"></li>
+      <li class="slider__indicator" data-slide-to="3"></li>
+    </ol>
+    <div class="slider__items">
+      <div class="slider__item slider__item_active">
+        <img   src="Картинки\2.jpg" alt="c1">
+      </div>
+      <div class="slider__item">
+        <img   src="Картинки\1.jpg" alt="c1">
+      </div>
+      <div class="slider__item">
+        <img    src="Картинки\3333.jpg" alt="c1">
+      </div>
+      <div class="slider__item">
+        <img   src="Картинки\4.jpg" alt="c1">
+      </div>
+    </div>
+    <a class="slider_control slider__control_prev" href="#" role="button"></a>
+    <a class="slider__control slider__control_next" href="#" role="button"></a>
+  </div>
+
+  <script>
+    'use strict';
+    var slider = (function (config) {
+
+      const ClassName = {
+        INDICATOR_ACTIVE: 'slider__indicator_active',
+        ITEM: 'slider__item',
+        ITEM_LEFT: 'slider__item_left',
+        ITEM_RIGHT: 'slider__item_right',
+        ITEM_PREV: 'slider__item_prev',
+        ITEM_NEXT: 'slider__item_next',
+        ITEM_ACTIVE: 'slider__item_active'
+      }
+
+      var
+        _isSliding = false, // индикация процесса смены слайда
+        _interval = 0, // числовой идентификатор таймера
+        _transitionDuration = 700, // длительность перехода
+        _slider = {}, // DOM элемент слайдера
+        _items = {}, // .slider-item (массив слайдов) 
+        _sliderIndicators = {}, // [data-slide-to] (индикаторы)
+        _config = {
+          selector: '', // селектор слайдера
+          isCycling: true, // автоматическая смена слайдов
+          direction: 'next', // направление смены слайдов
+          interval: 5000, // интервал между автоматической сменой слайдов
+          pause: true // устанавливать ли паузу при поднесении курсора к слайдеру
+        };
+
+      var
+        // функция для получения порядкового индекса элемента
+        _getItemIndex = function (_currentItem) {
+          var result;
+          _items.forEach(function (item, index) {
+            if (item === _currentItem) {
+              result = index;
+            }
+          });
+          return result;
+        },
+        // функция для подсветки активного индикатора
+        _setActiveIndicator = function (_activeIndex, _targetIndex) {
+          if (_sliderIndicators.length !== _items.length) {
+            return;
+          }
+          _sliderIndicators[_activeIndex].classList.remove(ClassName.INDICATOR_ACTIVE);
+          _sliderIndicators[_targetIndex].classList.add(ClassName.INDICATOR_ACTIVE);
+        },
+
+        // функция для смены слайда
+        _slide = function (direction, activeItemIndex, targetItemIndex) {
+          var
+            directionalClassName = ClassName.ITEM_RIGHT,
+            orderClassName = ClassName.ITEM_PREV,
+            activeItem = _items[activeItemIndex], // текущий элемент
+            targetItem = _items[targetItemIndex]; // следующий элемент
+
+          var _slideEndTransition = function () {
+            activeItem.classList.remove(ClassName.ITEM_ACTIVE);
+            activeItem.classList.remove(directionalClassName);
+            targetItem.classList.remove(orderClassName);
+            targetItem.classList.remove(directionalClassName);
+            targetItem.classList.add(ClassName.ITEM_ACTIVE);
+            window.setTimeout(function () {
+              if (_config.isCycling) {
+                clearInterval(_interval);
+                _cycle();
+              }
+              _isSliding = false;
+              activeItem.removeEventListener('transitionend', _slideEndTransition);
+            }, _transitionDuration);
+          };
+
+          if (_isSliding) {
+            return; // завершаем выполнение функции если идёт процесс смены слайда
+          }
+          _isSliding = true; // устанавливаем переменной значение true (идёт процесс смены слайда)
+
+          if (direction === "next") { // устанавливаем значение классов в зависимости от направления
+            directionalClassName = ClassName.ITEM_LEFT;
+            orderClassName = ClassName.ITEM_NEXT;
+          }
+
+          targetItem.classList.add(orderClassName); // устанавливаем положение элемента перед трансформацией
+          _setActiveIndicator(activeItemIndex, targetItemIndex); // устанавливаем активный индикатор
+
+          window.setTimeout(function () { // запускаем трансформацию
+            targetItem.classList.add(directionalClassName);
+            activeItem.classList.add(directionalClassName);
+            activeItem.addEventListener('transitionend', _slideEndTransition);
+          }, 0);
+
+        },
+        // функция для перехода к предыдущему или следующему слайду
+        _slideTo = function (direction) {
+          var
+            activeItem = _slider.querySelector('.' + ClassName.ITEM_ACTIVE), // текущий элемент
+            activeItemIndex = _getItemIndex(activeItem), // индекс текущего элемента 
+            lastItemIndex = _items.length - 1, // индекс последнего элемента
+            targetItemIndex = activeItemIndex === 0 ? lastItemIndex : activeItemIndex - 1;
+          if (direction === "next") { // определяем индекс следующего слайда в зависимости от направления
+            targetItemIndex = activeItemIndex == lastItemIndex ? 0 : activeItemIndex + 1;
+          }
+          _slide(direction, activeItemIndex, targetItemIndex);
+        },
+        // функция для запуска автоматической смены слайдов в указанном направлении
+        _cycle = function () {
+          if (_config.isCycling) {
+            _interval = window.setInterval(function () {
+              _slideTo(_config.direction);
+            }, _config.interval);
+          }
+        },
+        // обработка события click
+        _actionClick = function (e) {
+          var
+            activeItem = _slider.querySelector('.' + ClassName.ITEM_ACTIVE), // текущий элемент
+            activeItemIndex = _getItemIndex(activeItem), // индекс текущего элемента
+            targetItemIndex = e.target.getAttribute('data-slide-to');
+
+          if (!(e.target.hasAttribute('data-slide-to') || e.target.classList.contains('slider__control'))) {
+            return; // завершаем если клик пришёлся на не соответствующие элементы
+          }
+          if (e.target.hasAttribute('data-slide-to')) {// осуществляем переход на указанный сдайд 
+            if (activeItemIndex === targetItemIndex) {
+              return;
+            }
+            _slide((targetItemIndex > activeItemIndex) ? 'next' : 'prev', activeItemIndex, targetItemIndex);
+          } else {
+            e.preventDefault();
+            _slideTo(e.target.classList.contains('slider__control_next') ? 'next' : 'prev   ');
+          }
+        },
+        // установка обработчиков событий
+        _setupListeners = function () {
+          // добавление к слайдеру обработчика события click
+          _slider.addEventListener('click', _actionClick);
+          // остановка автоматической смены слайдов (при нахождении курсора над слайдером)
+          if (_config.pause && _config.isCycling) {
+            _slider.addEventListener('mouseenter', function (e) {
+              clearInterval(_interval);
+            });
+            _slider.addEventListener('mouseleave', function (e) {
+              clearInterval(_interval);
+              _cycle();
+            });
+          }
+        };
+
+      // init (инициализация слайдера)
+      for (var key in config) {
+        if (key in _config) {
+          _config[key] = config[key];
+        }
+      }
+      _slider = (typeof _config.selector === 'string' ? document.querySelector(_config.selector) : _config.selector);
+      _items = _slider.querySelectorAll('.' + ClassName.ITEM);
+      _sliderIndicators = _slider.querySelectorAll('[data-slide-to]');
+      // запуск функции cycle
+      _cycle();
+      _setupListeners();
+
+      return {
+        next: function () { // метод next 
+          _slideTo('next');
+        },
+        prev: function () { // метод prev 
+          _slideTo('prev');
+        },
+        stop: function () { // метод stop
+          clearInterval(_interval);
+        },
+        cycle: function () { // метод cycle 
+          clearInterval(_interval);
+          _cycle();
+        }
+      }
+    }({
+      selector: '.slider',
+      isCycling: true,
+      direction: 'next',
+      interval: 5000,
+      pause: true
+    }));
+  </script>
+      </article>
+      <br>
+      <br>
+<h1>Республика Болгария</h1> 
+<h2>Болгария расположена в юго-восточной Европе, граничит с Румынией, Сербией, Македонией, Грецией, Турцией и омывается Чёрным морем. Северная граница с Румынией проходит по Дунаю до Силистры. Территория Болгарии 110 550 км², немного больше Исландии. Страна расположена на западном побережье Чёрного моря, на севере граничит с Румынией, на юге — с Грецией и Турцией, на западе — с Сербией. Несмотря на относительно небольшие размеры, ландшафт Болгарии весьма разнообразен. Даже в небольших районах страны можно одновременно увидеть долины, плато, холмы, горы, водоёмы, ущелья, и глубокие речные долины. Географический центр Болгарии находится в районе Узана.</h2>
+ <br>
+     <div style= "padding-top:25px;"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3002379.6529997503!2d23.299824937362928!3d42.703479807916246!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40a8fec1c85bf089%3A0xa01269bf4c10!2z0JHQvtC70LPQsNGA0LjRjw!5e0!3m2!1sru!2sru!4v1554731029087!5m2!1sru!2sru" width="1300" height="600" frameborder="0" style="border:0" allowfullscreen></iframe>  </div>
+
+
+</body>
+ <h2   style="text-indent: 10%">  Република България  — государство в Юго-Восточной Европе, в восточной части Балканского полуострова, занимает 22 % его площади.
+
+Население — 7 101 859 чел.  территория — 110 993 км².
+<img  class="img" src="Картинки\9.jpg" align="right" width="400" height="300" > Занимает 103-е место в мире по территории и 103-е по численности населения. В Европейском союзе занимает 11-е место по территории и 16-е по численности населения.
+
+ в Болгарии
+Авиабилеты
+в Болгарию
+Аренда авто
+Достопримеча­тельности
+Болгарии
+Экскурсии
+по Болгарии
+Гиды
+Карты
+Видео
+Фото
+Погода
+Праздники и события
+ 
+<img   class="img" src="Картинки\0.jpg" align="left" width="300" height="200" >
+
+Радушная Болгария предлагает туристам лучшие пляжи «их» Черного моря, великолепный отдых с детьми и бюджетные горнолыжные туры. Солнечный Берег и Золотые Пески, Банско, Боровец и лечебные курорты — все о Болгарии от Тонкостей туризма: отели, погода, карта, туры и виза.
+Регионы и курорты Разница во времени КлиматВиза и таможня Как добраться Транспорт Аренда авто Связь и Wi-Fi Отели Деньги Как избежать проблем Пляжи Горные лыжи Лучшие фотографии БолгарииЛечение Паломничество Что привезти Кухня и рестораны Гиды в Болгарии Развлечения и достопримечательности Праздники и события Отзывы
+Болгарию и туристов из России связывает давняя, еще доперестроечная дружба. И, надо сказать, причины ее возникновения — красивая природа, обширная «экскурсионка», теплое море и гостеприимство местных жителей — по-прежнему налицо. При этом многие отели сегодня посвежели после ремонта, сервис улучшился и, конечно, подросли цены на туры. Но все-таки не настолько, чтобы страна стала дорогим направлением, недоступным «массовому туристу». Так что за сравнительно недорогим семейным отдыхом, особенно с детьми, и столь же недорогим и качественным лечением многие путешественники и сейчас отправляются именно в Болгарию. Зимняя же Болгария вполне подойдет для начинающих лыжников без сверхзапросов, а также молодежных компаний и семей с детьми. </h2>
+  </div>
+
+<body>
+  <div id="content" >
+  <p>   <font size="-1"> <span style="color:#ffffff";> Созданно Калошиным Алексеем Гр.229281 &nbsp &nbsp &nbsp &nbsp &nbsp
+&nbsp &nbsp &nbsp &nbsp &nbsp     &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp&nbsp &nbsp &nbsp  &nbsp &nbsp &nbsp&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp&nbsp &nbsp &nbsp&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  +7902371***   Почта для связи ALLex2410200166q@yandex.ru  &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  Информация актуальна на 2019г </span></font></p>
+                                                 
+  </div> 
+   
+ </body>
+  <a href="Главная.html " title="Вернуться к началу" class="topbutton">  Наверх   </a>
+</html>
